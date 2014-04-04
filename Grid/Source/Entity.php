@@ -539,7 +539,21 @@ class Entity extends Source
         foreach ($columns as $column) {
             $selectFrom = $column->getSelectFrom();
 
-            if ($column->getFilterType() === 'select' && ($selectFrom === 'source' || $selectFrom === 'query')) {
+            if($column->getFilterType() === 'select' && $column->getType() === 'entity') {
+                $query = ($selectFrom === 'source') ? clone $this->querySelectfromSource : clone $this->query;
+                $result = $query->select($this->getFieldName($column, true))
+                    ->distinct()
+                    ->setFirstResult(null)
+                    ->setMaxResults(null)
+                    ->getQuery()
+                    ->getResult();
+
+                $values = $column->getDisplayedValues($result, $column->getId(), $this->manager);
+
+                $column->setValues($values);
+            }
+
+            elseif ($column->getFilterType() === 'select' && ($selectFrom === 'source' || $selectFrom === 'query')) {
 
                 // For negative operators, show all values
                 if ($selectFrom === 'query') {

@@ -1,11 +1,12 @@
 <?xml version="1.0" ?>
 
 <container xmlns="http://symfony.com/schema/dic/services"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
         <parameter key="grid.column.text.class">APY\DataGridBundle\Grid\Column\TextColumn</parameter>
+        <parameter key="grid.column.entity.class">APY\DataGridBundle\Grid\Column\EntityColumn</parameter>
         <parameter key="grid.column.number.class">APY\DataGridBundle\Grid\Column\NumberColumn</parameter>
         <parameter key="grid.column.boolean.class">APY\DataGridBundle\Grid\Column\BooleanColumn</parameter>
         <parameter key="grid.column.datetime.class">APY\DataGridBundle\Grid\Column\DateTimeColumn</parameter>
@@ -17,6 +18,9 @@
 
     <services>
         <service id="grid.column.text" class="%grid.column.text.class%" public="false">
+            <tag name="grid.column.extension" />
+        </service>
+        <service id="grid.column.entity" class="%grid.column.entity.class%" public="false">
             <tag name="grid.column.extension" />
         </service>
 
