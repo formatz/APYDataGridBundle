@@ -14,9 +14,45 @@ namespace APY\DataGridBundle\Grid\Column;
 
 use APY\DataGridBundle\Grid\Row;
 use APY\DataGridBundle\Grid\Filter;
+use Doctrine\Common\Persistence\ObjectManager;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class EntityColumn extends Column
 {
+    /**
+     * @var string Entity name used in dql queries
+     */
+    protected $dqlEntityName;
+
+    protected $results;
+
+    public function __initialize(array $params)
+    {
+        // Disable the filter of the column
+        $this->setFilterable(false);
+        $this->setOrder(false);
+
+        parent::__initialize($params);
+
+        $this->setDqlEntityName($this->getParam('dqlEntityName'));
+    }
+
+    /**
+     * @param string $dqlEntityName
+     */
+    public function setDqlEntityName($dqlEntityName)
+    {
+        $this->dqlEntityName = $dqlEntityName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDqlEntityName()
+    {
+        return $this->dqlEntityName;
+    }
+
     public function isQueryValid($query)
     {
         $result = array_filter((array) $query, "is_numeric");
@@ -24,22 +60,32 @@ class EntityColumn extends Column
         return !empty($result);
     }
 
-    public function getDisplayedValues($values, $columnId, $manager)
+    public function getDisplayedValues($result, $columnId, $manager)
     {
+        /** @var \Doctrine\ORM\EntityManagerInterface $manager */
+
         $values = array();
-        foreach ($values as $row) {
-            $idEntity = $row[str_replace('.', '::', $columnId)];
-            $owner = $this->manager->createQuery('SELECT o FROM FormatzTxproBundle:User o WHERE o.id=:id')->setParameter('id',$idEntity)->getSingleResult();
-            $values[$idEntity] = $owner->__toString();
+        $columnName = str_replace('.', '::', $columnId);
+        $ids= array();
+        foreach ($result as $row) {
+            $ids[] = $row[$columnName];
+        }
+        $fieldName = explode('::', $columnName);
+        $fieldName = $fieldName[1];
+        $entityClass = $manager->getClassMetadata($this->dqlEntityName);
+        $arrFieldId = $entityClass->getIdentifier();
+        $accessor = PropertyAccess::createPropertyAccessor();
+        /** @var \Doctrine\ORM\Query $query */
+        $query = $manager->createQuery('SELECT o FROM ' . $this->dqlEntityName . ' o WHERE o.id IN(' . implode(',', array_map('intval', array_unique($ids))) .')');
+        $entities = $query->getResult();
+        foreach($entities as $entity) {
+            $values[$accessor->getValue($entity, $fieldName)] = $entity->__toString();
         }
         asort($values);
 
-        return $values;
-    }
+        $this->results = $values;
 
-    public function getDisplayedValue($value, $manager) {
-        $owner = $this->manager->createQuery('SELECT o FROM FormatzTxproBundle:User o WHERE o.id=:id')->setParameter('id',$idEntity)->getSingleResult();
-        return $owner->__toString();
+        return $values;
     }
 
 
@@ -53,10 +99,7 @@ class EntityColumn extends Column
      */
     public function renderCell($value, $row, $router)
     {
-        /** @var Row $row */
-        return $row->getEntity()->getOwner()->__toString();
-        /*$this->values[$row->getEntity()->getOwner()->getId()] = $value;
-        return $value;*/
+        return $this->results[$value];
     }
 
 
