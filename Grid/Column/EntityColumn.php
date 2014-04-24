@@ -74,7 +74,7 @@ class EntityColumn extends Column
             return $ids;
         }
         $fieldName = explode('::', $columnName);
-        $fieldName = $fieldName[1];
+        $fieldName = $fieldName[count($fieldName)-1];
         $entityClass = $manager->getClassMetadata($this->dqlEntityName);
         $arrFieldId = $entityClass->getIdentifier();
         $accessor = PropertyAccess::createPropertyAccessor();
