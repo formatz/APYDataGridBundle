@@ -70,6 +70,9 @@ class EntityColumn extends Column
         foreach ($result as $row) {
             $ids[] = $row[$columnName];
         }
+        if(empty($ids)) {
+            return $ids;
+        }
         $fieldName = explode('::', $columnName);
         $fieldName = $fieldName[1];
         $entityClass = $manager->getClassMetadata($this->dqlEntityName);
