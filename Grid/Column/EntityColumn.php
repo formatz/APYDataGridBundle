@@ -46,6 +46,16 @@ class EntityColumn extends Column
     }
 
     /**
+     * Return true if column is sorted
+     *
+     * @return bool return true when column is sorted
+     */
+    public function isSorted()
+    {
+        return false;
+    }
+
+    /**
      * @return string
      */
     public function getDqlEntityName()
