@@ -90,7 +90,7 @@ class Grid
     /**
      * @var boolean
      */
-     protected $prepared = false;
+    protected $prepared = false;
 
     /**
      * @var int
@@ -392,7 +392,7 @@ class Grid
 
         // Persistence or reset - kill previous session
         if ((!$this->request->isXmlHttpRequest() && !$this->persistence && $referer != $this->getCurrentUri())
-         || isset($this->requestData[self::REQUEST_QUERY_RESET])) {
+            || isset($this->requestData[self::REQUEST_QUERY_RESET])) {
             $this->session->remove($this->hash);
         }
 
@@ -671,9 +671,9 @@ class Grid
     {
         // Set to the first page if this is a request of order, limit, mass action or filtering
         if ($this->getFromRequest(self::REQUEST_QUERY_ORDER) !== null
-         || $this->getFromRequest(self::REQUEST_QUERY_LIMIT) !== null
-         || $this->getFromRequest(self::REQUEST_QUERY_MASS_ACTION) !== null
-         || $filtering) {
+            || $this->getFromRequest(self::REQUEST_QUERY_LIMIT) !== null
+            || $this->getFromRequest(self::REQUEST_QUERY_MASS_ACTION) !== null
+            || $filtering) {
             $this->set(self::REQUEST_QUERY_PAGE, 0);
         } else {
             $this->set(self::REQUEST_QUERY_PAGE, $page);
@@ -744,7 +744,7 @@ class Grid
         $this->saveSession();
     }
 
-     /**
+    /**
      * Store permanent filters to the session and disable the filter capability for the column if there are permanent filters
      */
     protected function processFilters($permanent = true)
@@ -1658,6 +1658,22 @@ class Grid
                 }
             }
         }
+    }
+
+    /**
+     * Return true if if footer table panel is visible in template - internal helper
+     *
+     * @return bool
+     */
+    public function isTableFooterSectionVisible()
+    {
+        foreach ($this->columns as $column) {
+            if ($column->getTotal() != '') {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

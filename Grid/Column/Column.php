@@ -89,6 +89,7 @@ abstract class Column
     protected $joinType;
     protected $export;
     protected $class;
+    protected $total;
 
     protected $dataJunction = self::DATA_CONJUNCTION;
 
@@ -312,8 +313,8 @@ abstract class Column
     public function isFiltered()
     {
         return ( (isset($this->data['from']) && $this->isQueryValid($this->data['from']) && $this->data['from'] != static::DEFAULT_VALUE)
-              || (isset($this->data['to']) && $this->isQueryValid($this->data['to']) && $this->data['to'] != static::DEFAULT_VALUE)
-              || (isset($this->data['operator']) && ($this->data['operator'] === self::OPERATOR_ISNULL || $this->data['operator'] === self::OPERATOR_ISNOTNULL)) );
+            || (isset($this->data['to']) && $this->isQueryValid($this->data['to']) && $this->data['to'] != static::DEFAULT_VALUE)
+            || (isset($this->data['operator']) && ($this->data['operator'] === self::OPERATOR_ISNULL || $this->data['operator'] === self::OPERATOR_ISNOTNULL)) );
     }
 
     public function setFilterable($filterable)
@@ -585,7 +586,7 @@ abstract class Column
                             $filters[] = new Filter(self::OPERATOR_GT, $this->data['from']);
                         }
                         if ($this->data['to'] != static::DEFAULT_VALUE) {
-                                $filters[] = new Filter(self::OPERATOR_LT, $this->data['to']);
+                            $filters[] = new Filter(self::OPERATOR_LT, $this->data['to']);
                         }
                         break;
                     case self::OPERATOR_BTWE:
@@ -867,5 +868,16 @@ abstract class Column
     public function getClass()
     {
         return $this->class;
+    }
+
+    public function getTotal()
+    {
+        return $this->total;
+    }
+
+    public function setTotal($total)
+    {
+        $this->total = $total;
+        return $this;
     }
 }
